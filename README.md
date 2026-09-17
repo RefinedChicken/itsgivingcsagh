@@ -28,7 +28,33 @@ guessed.
 
 ---
 
-## Setup
+## Quick start
+
+macOS / Linux:
+
+```bash
+./run.sh
+```
+
+Windows: double-click `run.bat`, or run it from a terminal.
+
+Either one creates the venv, installs dependencies, asks which camera index
+to use, calibrates (seven seconds), then launches `its_giving_v2.py`. Run it
+again any time — it reuses the existing venv and calibration.
+
+| key | does |
+|---|---|
+| `q` | quit |
+| `d` | toggle the HUD |
+| `c` | recalibrate |
+| `1`–`9` `0` `-` `=` `[` `]` | force a reaction on screen for 2 seconds |
+
+---
+
+## Manual setup
+
+If you'd rather not use `run.sh` / `run.bat` — set up the environment and run
+the calibration and camera steps yourself.
 
 ```bash
 python3.12 -m venv venv
@@ -46,21 +72,10 @@ asks for an *unpinned* `opencv-contrib-python`, which quietly drags OpenCV 5 and
 therefore NumPy 2 back in. That's why the OpenCV pins are in there even though
 nothing in the code cares. Unpin one and you have to unpin all three.
 
----
-
-## Running it
-
 ```bash
 python its_giving_v2.py --calibrate   # once, seven seconds
-python its_giving_v2.py
+python its_giving_v2.py               # add --camera N if 0 is the wrong device
 ```
-
-| key | does |
-|---|---|
-| `q` | quit |
-| `d` | toggle the HUD |
-| `c` | recalibrate |
-| `1`–`9` `0` `-` `=` `[` `]` | force a reaction on screen for 2 seconds |
 
 ---
 
