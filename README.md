@@ -104,6 +104,7 @@ someone who likes you first.
 | `cover_nose` | both hands over your nose and mouth |
 | `crashing_out` | both hands to your head, mouth open |
 | `dance` | both hands up behind your head, mouth closed |
+| `absolute_legacy` | both arms at 90°, palms open beside your head, neutral face |
 | `nose_closed` | pinch your nose shut |
 | `flirty` | one index fingertip on your lips |
 | `hand_up` | one open palm up beside your head |

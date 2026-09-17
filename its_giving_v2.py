@@ -26,15 +26,15 @@ import mediapipe as mp
 from mediapipe.tasks import python as mp_tasks
 from mediapipe.tasks.python import vision
 
-POSES = ["time_out", "heart", "cover_nose", "crashing_out", "dance", "nose_closed", "flirty", "hand_up",
-         "tongue_out", "open_mouth", "disgusted", "talking_to_wall", "suspicious", "spin"]
+POSES = ["time_out", "heart", "cover_nose", "crashing_out", "absolute_legacy", "dance", "nose_closed", "flirty",
+         "hand_up", "tongue_out", "open_mouth", "disgusted", "talking_to_wall", "suspicious", "spin"]
 TEST_KEYS = "1234567890-=[]"
 
 FACE_SCALE = 2.0
 HOLD_FRAMES = 10
 ARM = {
     "spin": 15, "suspicious": 8, "talking_to_wall": 6, "dance": 6, "crashing_out": 4,
-    "open_mouth": 4, "tongue_out": 5, "disgusted": 5,
+    "open_mouth": 4, "tongue_out": 5, "disgusted": 5, "absolute_legacy": 6,
 }
 
 Z = dict(
@@ -426,6 +426,10 @@ class Body:
         self.seen = min(vis) > 0.5
         shoulder_y = float(self.shoulders[:, 1].mean())
         self.elbows_up = self.seen and bool((self.elbows[:, 1] < shoulder_y).all())
+        shoulder_w = max(dist(self.shoulders[0], self.shoulders[1]), 1.0)
+        elbows_level = np.abs(self.elbows[:, 1] - shoulder_y) < 0.5 * shoulder_w
+        wrists_raised = self.wrists[:, 1] < self.elbows[:, 1] - 0.2 * shoulder_w
+        self.legacy_arms = self.seen and bool(elbows_level.all()) and bool(wrists_raised.all())
 
 
 def tongue_score(frame, face, hands, jaw_ready):
@@ -528,6 +532,11 @@ def decide(face, hands, body, tongue, gesture, m):
             return "crashing_out", d
 
     near_head = lambda h: abs(h.palm[0] - face.nose[0]) < 1.3 * fw and h.palm[1] < face.eye_y + 0.3 * face.h
+    neutral = m["jaw"] < FLOOR["jaw_open"] and not screaming and m["z_disgust"] < Z["disgust"]
+    d["legacy_open"] = [h.open for h in hands]
+    d["legacy_neutral"] = neutral
+    if len(hands) >= 2 and body and body.legacy_arms and all(h.open for h in hands) and neutral:
+        return "absolute_legacy", d
     if elbows_up and all(near_head(h) for h in hands):
         return ("crashing_out" if screaming else "dance"), d
 
@@ -564,7 +573,10 @@ def draw_hud(img, shown, raw, d, face, hands, body, base):
     g = d.get
     lines = [
         (f"showing: {shown or '-'}   raw: {raw or '-'}   hands: {g('hands', 0)}"
-         f"   elbows up: {'Y' if g('elbows_up') else 'n'}", (0, 255, 0)),
+         f"   elbows up: {'Y' if g('elbows_up') else 'n'}"
+         f"   legacy arms: {'Y' if (body and body.legacy_arms) else 'n'}"
+         f"   open: {g('legacy_open', [])}   neutral: {g('legacy_neutral', '-')}",
+         (0, 255, 0)),
         (f"jaw {g('jaw', 0):.2f} = {g('z_jaw', 0):+.1f}s/{Z['jaw_open']:.0f}   "
          f"squint {g('squint', 0):.2f} = {g('z_squint', 0):+.1f}s/{Z['squint']:.0f}   "
          f"tongue {g('tongue', 0):.2f}   turn {g('turn', 0):.2f}   gesture {g('gesture', 0):.3f}", (0, 255, 0)),

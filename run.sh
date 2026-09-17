@@ -11,5 +11,8 @@ fi
 source venv/bin/activate
 pip install -r requirements.txt
 
-python its_giving_v2.py --calibrate
-python its_giving_v2.py "$@"
+read -rp "Camera index (0 default, try another if 0 is wrong): " CAM
+CAM="${CAM:-0}"
+
+python its_giving_v2.py --calibrate --camera "$CAM"
+python its_giving_v2.py --camera "$CAM" "$@"
