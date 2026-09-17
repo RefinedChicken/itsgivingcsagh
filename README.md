@@ -107,7 +107,6 @@ someone who likes you first.
 | `absolute_legacy` | both arms at 90°, palms open beside your head, neutral face |
 | `nose_closed` | pinch your nose shut |
 | `flirty` | one index fingertip on your lips |
-| `hand_up` | one open palm up beside your head |
 | `tongue_out` | tongue out, mouth open |
 | `open_mouth` | jaw drops |
 | `disgusted` | scrunch your nose, or brows down and frown |

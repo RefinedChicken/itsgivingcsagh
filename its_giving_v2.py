@@ -27,7 +27,7 @@ from mediapipe.tasks import python as mp_tasks
 from mediapipe.tasks.python import vision
 
 POSES = ["time_out", "heart", "cover_nose", "crashing_out", "absolute_legacy", "dance", "nose_closed", "flirty",
-         "hand_up", "tongue_out", "open_mouth", "disgusted", "talking_to_wall", "suspicious", "spin"]
+         "tongue_out", "open_mouth", "disgusted", "talking_to_wall", "suspicious", "spin"]
 TEST_KEYS = "1234567890-=[]"
 
 FACE_SCALE = 2.0
@@ -545,8 +545,6 @@ def decide(face, hands, body, tongue, gesture, m):
             return "nose_closed", d
         if near(h.index, face.mouth, 0.22) and not near(h.palm, face.mouth, 0.3):
             return "flirty", d
-        if h.open and h.palm[1] < face.nose[1] and abs(h.palm[0] - face.nose[0]) > 0.8 * fw:
-            return "hand_up", d
 
     if tongue > T["tongue"]:
         return "tongue_out", d
